@@ -5,7 +5,7 @@ WSL2環境, Mac環境,での学習を想定しています。
 このハンズオンでは、Prometheus・Grafana・OpenTelemetry・Argo CD・Argo Rollouts といったよく利用されるクラウドネイティブな OSS について触れることができるハンズオンです。
 
 ## Chapter
-準備用chapter1＋全10chapterから構成されています。
+準備用chapter1＋全6chapterから構成されています。
 - [chapter00_setup](./chapter00_setup/)
 - [chapter01_cluster-create](./chapter01_cluster-create/)
 - [chapter02_prometheus](./chapter02_prometheus/)

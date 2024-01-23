@@ -5,51 +5,41 @@
 ## VM の作成
 
 下記の手順に従って、VMを作成してください。
-今回はAWS環境のVMで実施していますが、他の環境でも基本的に動作する想定です。
+MacはMultiPass、WindowsはWSL2を利用している想定で記載しています。
+RancherDesktopやOrbStackなどを利用していも問題ありませんが、OSのバージョンは揃えてください。
 
+### Macの場合
 ```
-# SSH で利用するキーペアの作成
-aws ec2 create-key-pair  \
-  --key-name cndt2023-handson-key \
-  --query 'KeyMaterial' \
-  --output text > cndt2023-handson-key.pem
+# MultiPassのインストール
+$ brew install --cask multipass
 
-# Security Groupの作成
-aws ec2 create-security-group \
-  --group-name cndt2023-handson-segcroup \
-  --description "CNDT2023 handson security group"
+# VMの作成
+$ multipass launch --name <VM名> --cpus 4 --mem 8G --disk 32G --timeout 3600 22.04
 
-# Security Groupルールの更新
-SECGROUP_ID=`aws ec2 describe-security-groups --group-names 'cndt2023-handson-segcroup' --query 'SecurityGroups[*].[GroupId]' --output text`
-for PORT in 22 80 443 8080 8443 18080 18443 28080 28443; do
-  aws ec2 authorize-security-group-ingress \
-  --group-id ${SECGROUP_ID} \
-  --protocol tcp \
-  --cidr 0.0.0.0/0 \
-  --port ${PORT}
-done
+# VMの起動確認
+$ multipass shell <VM名>
 
-# インスタンスの起動（Ubuntu 22.04 image）
-aws ec2 run-instances \
-  --image-id ami-09a81b370b76de6a2 \
-  --count 1 \
-  --instance-type t2.xlarge \
-  --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":50}}]' \
-  --key-name cndt2023-handson-key \
-  --security-group-ids ${SECGROUP_ID} \
-  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=cndt2023-handson-vm}]'
-
-# インスタンスのIPアドレスの確認
-aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=cndt2023-handson-vm" \
-  --query 'Reservations[*].Instances[*].PublicIpAddress' \
-  --output text
+# VMのIPアドレスの確認
+$ multipass ls
 ```
 
-出力されるインスタンスのIPアドレスは「名前解決の設定」の手順で`YOUR_VM_IP_ADDRESS`を置き換えて利用してください。
+### WSL2の場合
+```
+# WSL2のアップデート
+> wsl --update  --web-download
+
+# VMの作成
+> wsl --install --web-download -d Ubuntu-22.04
+
+# VMの起動確認
+> wsl -s Ubuntu-22.04
+> ws -l
+```
+
+出力されるIPアドレスは「名前解決の設定」の手順で`YOUR_VM_IP_ADDRESS`を置き換えて利用してください。
+WSL2の場合は、IPアドレスは`127.0.0.1`です。
 
 ## VM のセットアップ
-
 演習で利用するVMに最低限のパッケージをインストールします。
 
 ```
@@ -92,7 +82,8 @@ YOUR_VM_IP_ADDRESS    hubble.cilium.example.com
 ## リポジトリのClone
 
 マニフェストなどをVMにも配置するために、VM上でリポジトリをCloneしておいてください。
+なお、事前に```https://github.com/chmikata/cndt2023-handson-fork/```をForkしておき、それをCloneしてください。
 
 ```shell
-git clone https://github.com/cloudnativedaysjp/cndt2023-handson.git
+git clone https://github.com/<YOUR_GITHUB_ID>/cndt2023-handson-fork.git
 ```

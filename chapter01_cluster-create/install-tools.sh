@@ -4,7 +4,6 @@ set -eu
 
 KIND_VERSION=v0.20.0
 KUBECTL_VERSION=v1.28.1
-CILIUM_CLI_VERSION=v0.15.7
 HELM_VERSION="v3.12.3"
 HELMFILE_VERSION="0.156.0"
 
@@ -24,14 +23,6 @@ echo "  see: https://kubernetes.io/ja/docs/tasks/tools/install-kubectl/#install-
 curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
-echo ""
-
-echo "--- install cilium CLI ---"
-echo "  see: https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/#cilium-quick-installation"
-curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-amd64.tar.gz{,.sha256sum}
-sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
-sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
-rm cilium-linux-amd64.tar.gz{,.sha256sum}
 echo ""
 
 echo "--- install helm ---"
