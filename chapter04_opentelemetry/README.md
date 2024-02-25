@@ -463,7 +463,7 @@ Jaegerは以前までは`jaeger`プロトコルを利用していましたが、
 
 
 ログの時と同様に、OpenTelemetryCollectorリソースを利用してKubernetesにデプロイします。
-今回はトレースデータの取得先ホスト上のメトリクスを取得するエージェントとして動作させる想定なため、`.spec.mode`にはdaemonsetを指定し、DaemonSetとして起動します。
+今回はトレースデータの取得先ホスト上のメトリクスを取得するエージェントとして動作させる想定なため、`.spec.mode`にはdeploymentを指定し、Deploymentとして起動します。
 最後に、OpenTelemetry Collectorの設定を`.spec.config`に行っておきます。
 
 ```yaml
@@ -484,7 +484,7 @@ spec:
     exporters:
       debug: {}
       otlp:
-        endpoint: jaeger-collector.jaeger:14250
+        endpoint: jaeger-collector.jaeger:4317
         tls:
           insecure: true
 
@@ -536,7 +536,7 @@ OpenTelemetry Operatorには、各種アプリケーションのトレースデ�
 トレースデータを計装する場合には、[SDKを利用してアプリケーションに手動インスツルメンテーション](https://opentelemetry.io/docs/instrumentation/)するか、[サイドカーとしてコンテナをデプロイして自動インスツルメンテーション](https://opentelemetry.io/docs/kubernetes/operator/automatic/)するかの2通りの方法があります。
 今回は、アプリケーションに手を加えなくて利用可能な自動インスツルメンテーションを利用します。
 
-自動インスツルメンテーションを行う場合には、`Instrumentation`リソースで設定を行います。今回はデータを取得し、先ほど作成したJaegerのOTLP用のgRPCエンドポイント `jaeger-collector.jaeger:14250` に対してデータを転送する設定を行います。
+自動インスツルメンテーションを行う場合には、`Instrumentation`リソースで設定を行います。今回はデータを取得し、OpenTelemetryCollectorを経由してJaegerのOTLP用のgRPCエンドポイント `jaeger-collector.jaeger:4317` に対してデータを転送する設定を行います。
 
 ```yaml
 apiVersion: opentelemetry.io/v1alpha1
@@ -546,7 +546,7 @@ metadata:
   namespace: handson
 spec:
   exporter:
-    endpoint: http://jaeger-collector.jaeger:4317
+    endpoint: http://trace-collector-collector.default:4317
   propagators:
     - tracecontext
     - baggage

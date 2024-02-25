@@ -15,7 +15,7 @@ spec:
     exporters:
       debug: {}
       otlp:
-        endpoint: jaeger-collector.jaeger:14250
+        endpoint: jaeger-collector.jaeger:43417
         tls:
           insecure: true
 
